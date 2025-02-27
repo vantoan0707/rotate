@@ -50,7 +50,12 @@ function drawPlayers() {
     });
 }
 
+let isAnimating = false; // Flag to indicate if an animation is in progress
+
 function rotate() {
+    if (isAnimating) return; // Prevent starting a new animation if one is already in progress
+    isAnimating = true;
+
     const duration = 1000; // Animation duration in ms (1 second)
     const startTime = performance.now();
     const startPositions = players.map(p => ({ x: p.x, y: p.y, pos: p.pos })); // Capture current positions
@@ -85,6 +90,7 @@ function rotate() {
                 player.pos = startPositions[prevIndex].pos;
             });
             rotatedPositions = players.map(p => ({ x: p.x, y: p.y, label: p.label, pos: p.pos })); // Store the new positions
+            isAnimating = false; // Reset the flag when the animation is complete
         }
     }
 
@@ -131,6 +137,74 @@ function animateReorganize() {
 
 function reorganize() {
     animateReorganize();
+}
+
+function opp_serve() {
+    const ballImage = new Image();
+    ballImage.src = 'vb.png'; // Replace with the path to your ball image
+
+    const ballRadius = 15;
+    const startX = courtWidth / 2;
+    const startY = -ballRadius; // Start above the canvas
+    const endY = courtHeight / 1.5;
+
+    const duration = 1000; // Animation duration in ms (1 second)
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1); // 0 to 1
+
+        const currentY = startY + (endY - startY) * progress;
+
+        drawCourt();
+        drawPlayers();
+
+        // Draw the ball image
+        ctx.drawImage(ballImage, startX - ballRadius, currentY - ballRadius, ballRadius * 2, ballRadius * 2);
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    ballImage.onload = () => {
+        requestAnimationFrame(animate);
+    };
+}
+
+function team_serve() {
+    const ballImage = new Image();
+    ballImage.src = 'vb.png'; // Replace with the path to your ball image
+
+    const ballRadius = 15;
+    const startX = courtWidth / 2;
+    const startY = courtHeight; // Start above the canvas
+    const endY = -ballRadius;
+
+    const duration = 1000; // Animation duration in ms (1 second)
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1); // 0 to 1
+
+        const currentY = startY + (endY - startY) * progress;
+
+        drawCourt();
+        drawPlayers();
+
+        // Draw the ball image
+        ctx.drawImage(ballImage, startX - ballRadius, currentY - ballRadius, ballRadius * 2, ballRadius * 2);
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    ballImage.onload = () => {
+        requestAnimationFrame(animate);
+    };
 }
 
 function updateName(index, newName) {
